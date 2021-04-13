@@ -6,7 +6,7 @@
 #include "components.hpp"
 #include <string> //for std::hash
 #include "FastNoise.h"
-
+#include "worldgen.hpp"
 class RenderUtils {
     public:
         RenderUtils(SDL_Renderer *, int, int, int);
@@ -28,5 +28,6 @@ class RenderUtils {
 
         TTF_Font *font;
         std::hash<std::string> hasher;
+        WorldUtils WU;
 
 };

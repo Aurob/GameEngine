@@ -9,9 +9,9 @@ Game::Game(const int WIDTH, const int HEIGHT, const int TILESIZE) : view(WIDTH, 
     registry.emplace<Position>(player, Position{0, 0});
     registry.emplace<Movement>(player, Movement{256});
 
-    //for(int i = 0; i < 50; ++i) {
-    //    makeNPC(registry, rand() % 5000, rand() % 5000, TILESIZE);
-    //}
+    for(int i = 0; i < 50; ++i) {
+        makeNPC(registry, rand() % 2000, rand() % 2000, TILESIZE);
+    }
 
     lastTime = SDL_GetTicks();
 }
@@ -34,7 +34,7 @@ void Game::logic(FastNoise noise) {
     //Then use the player's updated position
     // to set the view bounds
 
-    bool valid_move = playerMovement(registry, keyStates, deltaTime, noise);
+    bool valid_move = playerMovement(registry, keyStates, deltaTime);
 
     entityMovement(registry, view.tilesize);
     if (valid_move) {

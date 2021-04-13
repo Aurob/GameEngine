@@ -2,7 +2,7 @@
 #include <stdio.h>
 
 
-bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & keys, int deltaTime, FastNoise noise) {
+bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & keys, int deltaTime) {
     auto view = registry.view<Player, Position, Movement>();
     for (const auto e : view) {
         float speed = view.get<Movement>(e).speed;
@@ -22,9 +22,8 @@ bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & ke
 
         temp.tileGX = floor(temp.globalX/64);
         temp.tileGY = floor(temp.globalY/64);
-
-        float tileNoise = (noise.GetSimplexFractal((temp.tileGX), (temp.tileGY)) - -1) / (1 - -1);
-        if(tileNoise >= 0.45) {
+        WorldUtils WU;
+        if(WU.terrainGeneration(temp.tileGX, temp.tileGY) >= 0.45) {
             position = temp;
             return true;
 
