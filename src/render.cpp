@@ -7,7 +7,7 @@ RenderUtils::RenderUtils(
         WIDTH{w}, HEIGHT{h},tilesize{t},
         rect{0, 0, 0, 0},
         color{255, 0, 0, 255}{
-            noise.SetFrequency(.09999931245);
+            noise.SetFrequency(.00999931245);
             setColor(0, 55, 89, 125);
             setRect(0, 0, w, h);
             render();
@@ -65,6 +65,7 @@ void RenderUtils::npcEntities(entt::registry & registry) {
 
 void RenderUtils::viewBounds(View & view) {
     int tx, ty, ID, rgb;
+    int r, g, b;
     float n;
     for(int x = view.bounds[0][0]; x < view.bounds[1][0] + 2; ++x) {
         for(int y = view.bounds[0][1]; y < view.bounds[3][1] + 2; ++y) {
@@ -72,10 +73,35 @@ void RenderUtils::viewBounds(View & view) {
             tx = -view.xmod + (x - view.bounds[0][0])*view.tilesize;
             ty = -view.ymod + (y - view.bounds[0][1])*view.tilesize;
 
-            n = noise.GetSimplexFractal(x, y);
-            //srand(ID);
-            rgb=256*n;
-            setColor(rgb*.4, rgb*.5, rgb*.4, 255);
+            n = (noise.GetSimplexFractal((x), (y)) - -1) / (1 - -1);
+            srand(ID);
+            rgb = 256 * n;
+            if(n < 0.45){
+                r = 0; g = 123; b = 238; //water
+            }
+            else if(n < 0.49){ //sand
+                r = rgb*1.8; g = rgb*1.7; b = rgb*1.2;
+            }
+            else if(n < 0.62){ //grass
+                r = 139*n*1.2; g = 214*n*1.8; b = 74*1.5;
+
+            }
+            else { //stone
+
+                if(n <= 0.75) {
+                    r = 139*(n*1.6); g = 139*(n*1.6); b = 139*(n*1.6);
+                }
+                else {
+                    float tempf = noise.GetFrequency();
+                    noise.SetFrequency(tempf/100);
+                    rgb = 256 * (noise.GetCubicFractal((x), (y)) - -1) / (1 - -1);
+                    r = rgb-rand()%256; g = rgb-rand()%256; b = rgb-rand()%256;
+                    noise.SetFrequency(tempf);
+                }
+            }
+
+
+            setColor(r, g, b, 255);
             setRect(tx, ty, view.tilesize, view.tilesize);
             render();
         }

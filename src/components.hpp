@@ -53,8 +53,8 @@ struct Pathing {//
         cost_so_far.clear();
         int srcindex;
         int destindex;
-        if(abs(dest[0]-src[0]) < draw_distance/2) {
-            if(abs(dest[1]-src[1]) < draw_distance/2) {
+        if(abs(dest[0]-src[0]) < draw_distance) {
+            if(abs(dest[1]-src[1]) < draw_distance) {
                 it = find(nodes.begin(), nodes.end(), vector<int>{dest[0]-src[0], dest[1]-src[1]});
                 if(it != nodes.end()) {
                     destindex = distance(nodes.begin(), it);

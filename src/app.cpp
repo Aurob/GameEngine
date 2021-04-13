@@ -8,12 +8,14 @@
 #define HEIGHT 768
 #define TILESIZE 64
 
+//123
 Application::Application() {
     SDL_Init(SDL_INIT_VIDEO);
     TTF_Init();
 }
 
 Application::~Application() {
+    printf("ASLDKJNALSDKN\n");
     SDL_Quit();
 }
 
@@ -60,7 +62,7 @@ void Application::run() {
                 if(e.wheel.y < 0 && game.view.tilesize > 2) {
                     game.view.tilesize/=2;
                 }
-                if(e.wheel.y > 0 && game.view.tilesize < 256) {
+                if(e.wheel.y > 0 && game.view.tilesize < 128) {
                     game.view.tilesize*=2;
                 }
             }
@@ -78,7 +80,7 @@ void Application::run() {
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        game.logic();
+        game.logic(game_renderer.noise);
         game.render(game_renderer);
         ++frame;
         SDL_RenderPresent(renderer);

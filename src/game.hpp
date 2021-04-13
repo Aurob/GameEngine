@@ -7,13 +7,13 @@
 #include <map>
 #include <SDL_timer.h>
 #include <SDL_scancode.h>
-
+#include "FastNoise.h"
 class Game {
     public:
         Game(int, int, int);
         void init();
         void input(RenderUtils &);
-        void logic();
+        void logic(FastNoise);
         void render(RenderUtils &);
 
         std::map<SDL_Scancode, bool> keyStates;

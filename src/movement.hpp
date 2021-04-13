@@ -6,6 +6,7 @@
 #include <map>
 #include <math.h>
 #include <time.h>
+#include "FastNoise.h"
 
-void playerMovement(entt::registry &, std::map<SDL_Scancode, bool> &, int);
+bool playerMovement(entt::registry &, std::map<SDL_Scancode, bool> &, int, FastNoise);
 void entityMovement(entt::registry &, int);

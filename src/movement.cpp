@@ -1,24 +1,37 @@
 #include "movement.hpp"
 #include <stdio.h>
 
-void playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & keys, int deltaTime) {
+
+bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & keys, int deltaTime, FastNoise noise) {
     auto view = registry.view<Player, Position, Movement>();
     for (const auto e : view) {
         float speed = view.get<Movement>(e).speed;
         Position & position = view.get<Position>(e);
         speed = ceil((static_cast<float>(deltaTime)/1000)*speed);
-        if(keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
-            position.globalY-=speed;
-        if(keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
-            position.globalX+=speed;
-        if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
-            position.globalY+=speed;
-        if(keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
-            position.globalX-=speed;
 
-        position.tileGX = floor(position.globalX/64);
-        position.tileGY = floor(position.globalY/64);
+        Position temp = position;
+
+        if(keys[SDL_SCANCODE_W] || keys[SDL_SCANCODE_UP])
+            temp.globalY-=speed;
+        if(keys[SDL_SCANCODE_D] || keys[SDL_SCANCODE_RIGHT])
+            temp.globalX+=speed;
+        if(keys[SDL_SCANCODE_S] || keys[SDL_SCANCODE_DOWN])
+            temp.globalY+=speed;
+        if(keys[SDL_SCANCODE_A] || keys[SDL_SCANCODE_LEFT])
+            temp.globalX-=speed;
+
+        temp.tileGX = floor(temp.globalX/64);
+        temp.tileGY = floor(temp.globalY/64);
+
+        float tileNoise = (noise.GetSimplexFractal((temp.tileGX), (temp.tileGY)) - -1) / (1 - -1);
+        if(tileNoise >= 0.45) {
+            position = temp;
+            return true;
+
+        }
+
     }
+    return false;
 }
 
 void entityMovement(entt::registry & registry, int tilesize) {

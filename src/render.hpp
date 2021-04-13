@@ -1,7 +1,7 @@
 #pragma once
 #include <SDL_render.h>
 #include <SDL_ttf.h>
-#include "entt.hpp"
+//#include "entt.hpp"
 #include "view.hpp"
 #include "components.hpp"
 #include <string> //for std::hash
@@ -18,6 +18,7 @@ class RenderUtils {
         void screenshot();
         void text(const char*);
         void render() const;
+        FastNoise noise;
 
     private:
         SDL_Renderer *renderer;
@@ -27,5 +28,5 @@ class RenderUtils {
 
         TTF_Font *font;
         std::hash<std::string> hasher;
-        FastNoise noise;
+
 };
