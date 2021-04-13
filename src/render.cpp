@@ -95,7 +95,7 @@ void RenderUtils::viewBounds(View & view) {
                     float tempf = noise.GetFrequency();
                     noise.SetFrequency(tempf/100);
                     rgb = 256 * (noise.GetCubicFractal((x), (y)) - -1) / (1 - -1);
-                    r = rgb-rand()%256; g = rgb-rand()%256; b = rgb-rand()%256;
+                    r = rgb*(x%256); g = rgb*(y%256); b = rgb*((x+y)%256);
                     noise.SetFrequency(tempf);
                 }
             }

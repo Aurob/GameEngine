@@ -9,9 +9,9 @@ Game::Game(const int WIDTH, const int HEIGHT, const int TILESIZE) : view(WIDTH, 
     registry.emplace<Position>(player, Position{0, 0});
     registry.emplace<Movement>(player, Movement{256});
 
-    for(int i = 0; i < 50; ++i) {
-        makeNPC(registry, rand() % 5000, rand() % 5000, TILESIZE);
-    }
+    //for(int i = 0; i < 50; ++i) {
+    //    makeNPC(registry, rand() % 5000, rand() % 5000, TILESIZE);
+    //}
 
     lastTime = SDL_GetTicks();
 }
