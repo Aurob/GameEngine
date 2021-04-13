@@ -63,7 +63,7 @@ void RenderUtils::npcEntities(entt::registry & registry) {
     }
 }
 
-void RenderUtils::viewBounds(View & view) {
+void RenderUtils::viewBounds(View & view, WorldUtils& WU) {
     int tx, ty, ID, rgb;
     int r, g, b;
     float n;
@@ -94,11 +94,14 @@ void RenderUtils::viewBounds(View & view) {
                 }
                 //Ore generation?
                 else {
-                    float tempf = noise.GetFrequency();
-                    noise.SetFrequency(tempf/100);
-                    rgb = 256 * (noise.GetCubicFractal((x), (y)) - -1) / (1 - -1);
-                    r = rgb*((x+y)%256); g = rgb*((x+y)%256); b = rgb*((x+y)%256);
-                    noise.SetFrequency(tempf);
+                    float tempf = WU.terrain_noise.GetFrequency();
+
+                    WU.terrain_noise.SetFrequency(tempf*10);
+                    n = (WU.terrain_noise.GetCubic((x), (y)) - -1) / (1 - -1);
+                    rgb = 256 * n;
+
+                    r = (y-x%255)*tempf*1.2; g = (x-y%255)*tempf*1.8; b = (x+y%255)*1.5;
+                    WU.terrain_noise.SetFrequency(tempf);
                 }
             }
 
