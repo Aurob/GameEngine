@@ -1,5 +1,5 @@
 # GameEngine
-![Screenshot](https://raw.githubusercontent.com/Aurob/GameEngine/main/screenshot.bmp)
+![Screenshot](https://github.com/Aurob/GameEngine/blob/main/screenshot.bmp)
 Simple 2D Engine made with SDL2, Procedural generation using FastNoise, and ECS with EnTT<br>
 [SDL2](https://www.libsdl.org/download-2.0.php)
 <br>
