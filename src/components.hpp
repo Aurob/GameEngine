@@ -4,6 +4,7 @@
 //Tag components
 struct Player {};
 struct NPC {};
+struct Rock {};
 struct Rendered {};
 struct Interaction {};
 
@@ -18,6 +19,7 @@ struct Position {
 
 struct Identification {
     int ID;
+    int r, g, b;
 };
 
 struct Movement {
@@ -29,7 +31,12 @@ struct Health {
     float health;
 };
 
+
 struct Pathing {//
+    vector<vector<int>> neighbors{
+        {1,0}, {0,1}, {-1,0}, {0,-1},
+        {1,-1}, {-1,-1}, {1,1}, {-1,1}
+    };
     Graph path_graph{};
     vector<vector<int>> nodes{};
     std::unordered_map<int, int> came_from;
@@ -37,13 +44,9 @@ struct Pathing {//
     vector<vector<int>>::iterator it;
     int draw_distance;
     int idle_time;
+    int src;
 
     Pathing(int size) {
-        draw_distance = size;
-        setGraph(size);
-    }
-
-    void setGraph(int size){
         draw_distance = size;
         ConstructGraph(size, size, path_graph, nodes);
     }
@@ -51,11 +54,13 @@ struct Pathing {//
     vector<int> path(vector<int> src, vector<int> dest) {
         came_from.clear();
         cost_so_far.clear();
-        int srcindex;
+
         int destindex;
-        if(abs(dest[0]-src[0]) < draw_distance) {
-            if(abs(dest[1]-src[1]) < draw_distance) {
-                it = find(nodes.begin(), nodes.end(), vector<int>{dest[0]-src[0], dest[1]-src[1]});
+        int srcindex = ((draw_distance*draw_distance)/2) + ((draw_distance%2==0)?draw_distance/2:0);
+        //printf("%d\n", dest[0]-src[0]);
+        if(abs(dest[0]-src[0]) <= draw_distance) {
+            if(abs(dest[1]-src[1]) <= draw_distance) {
+                it = find(nodes.begin(), nodes.end(), vector<int>{(src[0]-dest[0]), (src[1]-dest[1])});
                 if(it != nodes.end()) {
                     destindex = distance(nodes.begin(), it);
                 }
@@ -63,10 +68,13 @@ struct Pathing {//
         }
         else return {-1, -1};
 
-        dijkstra(path_graph, nodes, (draw_distance*draw_distance)/2, destindex, came_from, cost_so_far);
-        int next_index = reconstruct_path((draw_distance*draw_distance)/2, destindex, came_from)[0];
+        dijkstra(path_graph, nodes, srcindex, destindex, came_from, cost_so_far);
+        int next_index = reconstruct_path(srcindex, destindex, came_from)[0];
         if(next_index != -1)
-            return nodes[next_index];
+            return {
+                nodes[next_index][0],
+                nodes[next_index][1]
+            };
         else return {-1,-1};
     }
 };

@@ -9,7 +9,7 @@ extern "C" int main(int, char *[]) {
       app.run();
   } catch (std::exception &e) {
     // The only exceptions we should get are from SDL
-    printf("%s\n", e.what());
+    printf("Error: %s\n", e.what());
     return 1;
   }
   return 0;

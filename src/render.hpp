@@ -7,6 +7,7 @@
 #include <string> //for std::hash
 #include "FastNoise.h"
 #include "worldgen.hpp"
+
 class RenderUtils {
     public:
         RenderUtils(SDL_Renderer *, int, int, int);
@@ -14,7 +15,8 @@ class RenderUtils {
         void setColor(int, int, int, int);
         void playerEntity(entt::registry &);
         void npcEntities(entt::registry &);
-        void viewBounds(View &);
+        void rockEntities(entt::registry &);
+        void viewBounds(View &, WorldUtils &);
         void screenshot();
         void text(const char*);
         void render() const;
@@ -28,6 +30,5 @@ class RenderUtils {
 
         TTF_Font *font;
         std::hash<std::string> hasher;
-        WorldUtils WU;
 
 };

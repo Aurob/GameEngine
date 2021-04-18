@@ -42,14 +42,22 @@ void View::update(entt::registry & registry) {
 
         xmod = (pos.tileGX < 0) ? offsetX + tilesize : offsetX;
         ymod = (pos.tileGY < 0) ? offsetY + tilesize : offsetY;
+
+        pos.screenX = (-xmod + ((pos.tileGX - bounds[0][0]) * tilesize)) +
+                    (static_cast<float>(pos.globalX%default_tilesize) /
+                     static_cast<float>(default_tilesize))*tilesize;
+
+        pos.screenY = (-ymod + ((pos.tileGY - bounds[0][1]) * tilesize)) +
+                    (static_cast<float>(pos.globalY%default_tilesize) /
+                    static_cast<float>(default_tilesize))*tilesize;
     }
 }
 
 //Give any entity currently within the view bounds the Rendered component
-void View::updateEntities(entt::registry & registry) {
+void View::updateEntities(entt::registry & registry, int & bound_count) {
+    bound_count = 0;
+    const auto entities = registry.view<Position>();
 
-    registry.sort<NPC, Position>();
-    const auto entities = registry.view<NPC, Position>();
     for(const auto entity : entities) {
         Position &pos = entities.get<Position>(entity);
 
@@ -62,18 +70,23 @@ void View::updateEntities(entt::registry & registry) {
         //TODO
         //need a better solution
         //not all entities will need to have their tiles updated
-        pos.tileGX = floor(pos.globalX/default_tilesize);
-        pos.tileGY = floor(pos.globalY/default_tilesize);
+        //pos.tileGX = floor(pos.globalX/default_tilesize);
+        //pos.tileGY = floor(pos.globalY/default_tilesize);
         //TODO
         //Factor in entity width
         //Need Width component?
         if(pos.tileGX >= bounds[0][0] - 1 && pos.tileGX <= bounds[1][0] + 1) {
             if(pos.tileGY >= bounds[0][1] - 1 && pos.tileGY <= bounds[2][1] + 1) {
-                pos.screenX = (-xmod + ((pos.tileGX - bounds[0][0]) * tilesize)) + (static_cast<float>(pos.globalX%default_tilesize)/static_cast<float>(default_tilesize))*tilesize;
+                pos.screenX = (-xmod + ((pos.tileGX - bounds[0][0]) * tilesize)) +
+                            (static_cast<float>(pos.globalX%default_tilesize) /
+                             static_cast<float>(default_tilesize))*tilesize;
 
-                pos.screenY = (-ymod + ((pos.tileGY - bounds[0][1]) * tilesize)) + (static_cast<float>(pos.globalY%default_tilesize)/static_cast<float>(default_tilesize))*tilesize;
+                pos.screenY = (-ymod + ((pos.tileGY - bounds[0][1]) * tilesize)) +
+                            (static_cast<float>(pos.globalY%default_tilesize) /
+                            static_cast<float>(default_tilesize))*tilesize;
 
                 registry.emplace<Rendered>(entity);
+                bound_count++;
             }
         }
     }

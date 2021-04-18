@@ -6,3 +6,4 @@
 
 void playerInput(std::map<SDL_Scancode, bool>);
 bool mouseCollision(int[2], Position);
+int entityInteractions(int[2], bool, entt::registry &);

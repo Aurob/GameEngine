@@ -21,8 +21,8 @@ vector<int> reconstruct_path(int start, int goal, unordered_map<int, int> came_f
         path.push_back(current);
         current = came_from[current];
     }
-    //path.push_back(start); // optional
-    reverse(path.begin(), path.end());
+    path.push_back(start); // optional
+    //reverse(path.begin(), path.end());
     return path;
 }
 
@@ -57,6 +57,7 @@ void dijkstra(Graph graph, vector<vector<int>> nodes,
 }
 
 // vector<int> ConstructGraph(int tilesize, vector<int> origin, vector<int> src, int width, int height, vector<int> dest) {
+
 void ConstructGraph(int width, int height, Graph & graph, vector<vector<int>> & nodes) {
 
     // int dest_index;
@@ -65,6 +66,7 @@ void ConstructGraph(int width, int height, Graph & graph, vector<vector<int>> & 
     //vector<vector<int>> nodes;
     nodes.clear();
     int index;
+    int src;
     for(int w = 0; w < width; ++w) {
         for(int h = 0; h < height; ++h) {
             nodes.push_back({w, h});
@@ -83,7 +85,7 @@ void ConstructGraph(int width, int height, Graph & graph, vector<vector<int>> & 
     // }
     // else return {-1,-1};
     //
-    for(float i = 0; i < (width)*(height); ++i) {
+    for(float i = 0; i < ((width)*(height)); ++i) {
         for(int n = 0; n < 8; ++n) {
             if(nodes[i][0] + neighbors[n][0] > -1 && nodes[i][0] + neighbors[n][0] < width) {
                 if(nodes[i][1] + neighbors[n][1] > -1 && nodes[i][1] + neighbors[n][1] < height) {
@@ -112,7 +114,5 @@ void ConstructGraph(int width, int height, Graph & graph, vector<vector<int>> & 
             // }
         }
     }
-
-
-    //return graph;
 }
+

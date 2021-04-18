@@ -9,7 +9,7 @@ class View {
     public:
         View(int, int, int);
         void update(entt::registry &);
-        void updateEntities(entt::registry &);
+        void updateEntities(entt::registry &, int&);
 
         int WIDTH, HEIGHT;
         int default_tilesize;

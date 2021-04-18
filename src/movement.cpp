@@ -2,7 +2,12 @@
 #include <stdio.h>
 
 
-bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & keys, int deltaTime) {
+bool playerMovement(
+    entt::registry & registry,
+    std::map<SDL_Scancode, bool> & keys,
+    int deltaTime,
+    WorldUtils& WU) {
+
     auto view = registry.view<Player, Position, Movement>();
     for (const auto e : view) {
         float speed = view.get<Movement>(e).speed;
@@ -22,7 +27,6 @@ bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & ke
 
         temp.tileGX = floor(temp.globalX/64);
         temp.tileGY = floor(temp.globalY/64);
-        WorldUtils WU;
         if(WU.terrainGeneration(temp.tileGX, temp.tileGY) >= 0.45) {
             position = temp;
             return true;
@@ -33,16 +37,14 @@ bool playerMovement(entt::registry & registry, std::map<SDL_Scancode, bool> & ke
     return false;
 }
 
-void entityMovement(entt::registry & registry, int tilesize) {
-    int userTileX;
-    int userTileY;
+void entityMovement(entt::registry & registry, int tilesize, WorldUtils & WU) {
+    Position usrpos;
+    float n;
     auto player = registry.view<Player, Position>();
     for (const auto p : player) {
-        Position pos = registry.get<Position>(p);
-        userTileX = pos.tileGX;
-        userTileY = pos.tileGY;
+        usrpos = registry.get<Position>(p);
     }
-
+    srand(time(NULL));
     auto view = registry.view<NPC, Position, Rendered, Pathing>();
     for (const auto e : view) {
         Position & pos = view.get<Position>(e);
@@ -50,36 +52,78 @@ void entityMovement(entt::registry & registry, int tilesize) {
         const Identification id = registry.get<Identification>(e);
         //Need a consistent srand so position updates
         // aren't affected by tile randomness
-        srand(id.ID);
-        srand(rand()%10000);
-        if(graph.idle_time>0 && SDL_GetTicks()-graph.idle_time<3) {
-            pos.globalX+=((rand()%2<1)?-1:1);
-            pos.globalY+=((rand()%2<1)?-1:1);
-        }
-        else if(abs(pos.tileGX-userTileX) <= graph.draw_distance && abs(pos.tileGY-userTileY) <= graph.draw_distance){
-            graph.idle_time=0;
-            vector<int> next_tile = graph.path({pos.tileGX, pos.tileGY}, {userTileX, userTileY});
 
-            if(next_tile[0]+userTileX >= pos.tileGX+graph.draw_distance/2) pos.globalX+=1;
-            if(next_tile[0]+userTileX <= pos.tileGX-graph.draw_distance/2) pos.globalX-=1;
-            if(next_tile[1]+userTileY >= pos.tileGY+graph.draw_distance/2) pos.globalY+=1;
-            if(next_tile[1]+userTileY <= pos.tileGY-graph.draw_distance/2) pos.globalY-=1;
-
-            if(next_tile[0] != -1) {
-                if(next_tile[0]+userTileX==pos.tileGX && next_tile[0]+userTileX==pos.tileGX) {
-                    pos.globalX+=((rand()%2<1)?-1:1);
-                    pos.globalY+=((rand()%2<1)?-1:1);
-                    graph.idle_time = SDL_GetTicks();
-                }
+        if(graph.idle_time>0) {
+            if(SDL_GetTicks()-graph.idle_time>3000) {
+                graph.idle_time = 0;
             }
             else {
-                graph.idle_time = SDL_GetTicks();
-                pos.globalX += (rand()%3) * ((rand() % 2 < 1) ? -1 : 1);
-                pos.globalY += (rand()%3) * ((rand() % 2 < 1) ? -1 : 1);
+                pos.globalX += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+                pos.globalY += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
             }
         }
+        else {
+            vector<int> next_tile = {usrpos.tileGX-pos.tileGX, usrpos.tileGY-pos.tileGY};//graph.path({pos.tileGX, pos.tileGY}, {usrpos.tileGX, usrpos.tileGY});
+
+            if(abs(next_tile[0]) < graph.draw_distance && abs(next_tile[1]) < graph.draw_distance) {
+                //printf("%d %d\n", usrpos.globalX-pos.globalX, usrpos.globalY-pos.globalY);
+                if(next_tile[0] == 0 && next_tile[1] == 0) {
+                    if(usrpos.globalX-pos.globalX == 0 || usrpos.globalY-pos.globalY == 0) {
+                        pos.globalX += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+                        pos.globalY += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+                        graph.idle_time = SDL_GetTicks();
+                    }
+                    else {
+                        if(usrpos.globalX-pos.globalX < 0) pos.globalX-=1;
+                        if(usrpos.globalX-pos.globalX > 0) pos.globalX+=1;
+                        if(usrpos.globalY-pos.globalY < 0) pos.globalY-=1;
+                        if(usrpos.globalY-pos.globalY > 0) pos.globalY+=1;
+                    }
+                }
+                if(next_tile[0]<0) pos.globalX-=1+(rand()%3);
+                if(next_tile[0]>0) pos.globalX+=1+(rand()%3);
+                if(next_tile[1]<0) pos.globalY-=1+(rand()%3);
+                if(next_tile[1]>0) pos.globalY+=1+(rand()%3);
+            }
+            else {
+                pos.globalX += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+                pos.globalY += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+            }
+        }
+        //else
+        //if(abs(pos.tileGX-userTileX) <= graph.draw_distance && abs(pos.tileGY-userTileY) <= graph.draw_distance){
+            //graph.idle_time=0;
+
 
         pos.tileGX = floor(pos.globalX/64);
         pos.tileGY = floor(pos.globalY/64);
     }
 }
+
+//if(next_tile[0] != -1) {
+
+                //if(next_tile[0]+usrpos.tileGX > pos.tileGX) pos.globalX+=next_tile[0];//(rand()%3);
+                //if(next_tile[0]+usrpos.tileGX < pos.tileGX) pos.globalX-=next_tile[0];//(rand()%3);
+                //if(next_tile[1]+usrpos.tileGY > pos.tileGY) pos.globalY+=next_tile[1];//(rand()%3);
+                //if(next_tile[1]+usrpos.tileGY < pos.tileGY) pos.globalY-=next_tile[1];//(rand()%3);
+                /*if(next_tile[0]+usrpos.tileGX==pos.tileGX && next_tile[1]+usrpos.tileGY==pos.tileGY) {
+                    printf("SAME!");
+                    if(usrpos.globalX >= pos.globalX) pos.globalX+=1;
+                    if(usrpos.globalX <= pos.globalX) pos.globalX-=1;
+                    if(usrpos.globalY >= pos.globalY) pos.globalY+=1;
+                    if(usrpos.globalY <= pos.globalY) pos.globalY-=1;
+                //    pos.globalX+=((rand()%2<1)?-1:1);
+                //    pos.globalY+=((rand()%2<1)?-1:1);
+                //    graph.idle_time = SDL_GetTicks();
+                }*/
+            //}
+            //else {
+            //    graph.idle_time = SDL_GetTicks();
+           //     pos.globalX += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+            //    pos.globalY += (rand()%2) * ((rand() % 2 < 1) ? -1 : 1);
+            //}
+        //}
+        //else {
+        //    pos.globalX+=((n*2<1)?-1:1);
+        //    pos.globalY+=((n*2<1)?-1:1);
+        //}

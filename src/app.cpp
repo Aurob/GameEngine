@@ -59,7 +59,7 @@ void Application::run() {
                 game.keyStates[e.key.keysym.scancode] = false;
             }
             else if(e.type == SDL_MOUSEWHEEL) {
-                if(e.wheel.y < 0 && game.view.tilesize > 2) {
+                if(e.wheel.y < 0 && game.view.tilesize > 16) {
                     game.view.tilesize/=2;
                 }
                 if(e.wheel.y > 0 && game.view.tilesize < 128) {

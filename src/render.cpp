@@ -33,14 +33,10 @@ void RenderUtils::render() const {
 }
 
 void RenderUtils::playerEntity(entt::registry & registry) {
+    int tx, ty;
     setColor(0, 0, 0, 255);
     setRect(WIDTH/2, HEIGHT/2, tilesize/10, tilesize/10);
     render();
-
-    const auto player = registry.view<Player, Position>();
-    for(const auto p : player) {
-        Position pos = registry.get<Position>(p);
-    }
 }
 
 void RenderUtils::npcEntities(entt::registry & registry) {
@@ -53,6 +49,27 @@ void RenderUtils::npcEntities(entt::registry & registry) {
 
         if(registry.has<Health>(npc)) {
             const Health amt = registry.get<Health>(npc);
+            if(amt.health != amt.maxHealth) {
+                setRect(pos.screenX - 5, pos.screenY - 10, ((amt.health/amt.maxHealth) * 20) + 1, 5);
+                setColor(255, 0, 0, 125);
+                render();
+                setColor(255, 255, 255, 255);
+            }
+        }
+    }
+}
+
+void RenderUtils::rockEntities(entt::registry & registry) {
+    const auto view = registry.view<Rock, Position, Rendered, Identification>();
+    for(const auto rock : view) {
+        Position pos = view.get<Position>(rock);
+        Identification id = view.get<Identification>(rock);
+        setColor(id.r, id.g, id.b, 255);
+        setRect(pos.screenX, pos.screenY, tilesize/5, tilesize/5);
+        render();
+
+        if(registry.has<Health>(rock)) {
+            const Health amt = registry.get<Health>(rock);
             if(amt.health != amt.maxHealth) {
                 setRect(pos.screenX - 5, pos.screenY - 10, ((amt.health/amt.maxHealth) * 20) + 1, 5);
                 setColor(255, 0, 0, 125);
@@ -85,7 +102,6 @@ void RenderUtils::viewBounds(View & view, WorldUtils& WU) {
             }
             else if(n < 0.62){ //grass
                 r = 139*n*1.2; g = 214*n*1.8; b = 74*1.5;
-
             }
             else { //stone
 
@@ -96,12 +112,11 @@ void RenderUtils::viewBounds(View & view, WorldUtils& WU) {
                 else {
                     float tempf = WU.terrain_noise.GetFrequency();
 
-                    WU.terrain_noise.SetFrequency(tempf*10);
-                    n = (WU.terrain_noise.GetCubic((x), (y)) - -1) / (1 - -1);
+                    n = WU.oreGeneration(x, y);
                     rgb = 256 * n;
-
-                    r = (y-x%255)*tempf*1.2; g = (x-y%255)*tempf*1.8; b = (x+y%255)*1.5;
-                    WU.terrain_noise.SetFrequency(tempf);
+                    r = x+n*255*.9;
+                    g = y+n*255*1.2;
+                    b = x+y+n*255*1.7;
                 }
             }
 
