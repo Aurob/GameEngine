@@ -14,7 +14,7 @@ class Game {
         Game(int, int, int);
         void init();
         void input();
-        void logic(FastNoise);
+        void logic(); //FastNoise
         void render(RenderUtils &);
 
         std::map<SDL_Scancode, bool> keyStates;
@@ -25,7 +25,7 @@ class Game {
         int lastTilesize;
     private:
         int starttime;
-        entt::registry registry;
+        //entt::registry registry;
         int deltaTime;
         int lastTime;
         int bound_entities;

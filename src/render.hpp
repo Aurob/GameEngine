@@ -14,13 +14,13 @@ class RenderUtils {
         void setRect(int, int, int, int);
         void setColor(int, int, int, int);
         void playerEntity(entt::registry &);
-        void npcEntities(entt::registry &);
-        void rockEntities(entt::registry &);
+        void npcEntities(entt::registry &, int);
+        void rockEntities(entt::registry &, int);
         void viewBounds(View &, WorldUtils &);
         void screenshot();
         void text(const char*);
         void render() const;
-        FastNoise noise;
+        //FastNoise noise;
 
     private:
         SDL_Renderer *renderer;

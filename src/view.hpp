@@ -18,5 +18,5 @@ class View {
         int offsetX;
         int offsetY;
         int xmod, ymod;
-        FastNoise noise;
+        //FastNoise noise;
 };

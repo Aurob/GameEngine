@@ -5,8 +5,8 @@
 struct Player {};
 struct NPC {};
 struct Rock {};
-struct Rendered {};
 struct Interaction {};
+struct Rendered {};
 
 //global positions are the main position values
 //screen and tile positions are calculated from the global
@@ -17,9 +17,11 @@ struct Position {
     int tileSX, tileSY; // screen
 };
 
+
 struct Identification {
     int ID;
     int r, g, b;
+    int size;
 };
 
 struct Movement {

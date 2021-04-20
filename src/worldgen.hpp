@@ -5,9 +5,9 @@
 #include <time.h>
 #include "math.h"
 #include "FastNoise.h"
-
+#include "globals.hpp"
 using namespace std;
-
+extern int TILESIZE;
 class WorldUtils {
     public:
         float n;

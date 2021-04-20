@@ -5,16 +5,16 @@ WorldUtils::WorldUtils(){
     terrain_noise.SetSeed(time(NULL));
     step_noise.SetSeed(time(NULL));
     ore_noise.SetSeed(time(NULL));
-    terrain_noise.SetFrequency(.013000123);
+    terrain_noise.SetFrequency(.00939788665443332);
     step_noise.SetFrequency(.9123124512312);
     ore_noise.SetFrequency(.009);
+    printf("%d\n", tilesize);
 
 }
 
-float WorldUtils::terrainGeneration(int i, int j){
-    //
+float WorldUtils::terrainGeneration(int i, int j){//
     n = (terrain_noise.GetSimplexFractal((i), (j)) - -1) / (1 - -1);
-    //n = (terrain_noise.GetSimplexFractal((i)+pow(n,2), (j)+pow(n,2)) - -1) / (1 - -1);
+    n = (terrain_noise.GetSimplexFractal((i)+pow(n,2), (j)+pow(n,2)) - -1) / (1 - -1);
 
     return n;
 }

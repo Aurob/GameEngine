@@ -22,7 +22,7 @@ void Game::init() {
     printf("Game started!\n");
 }
 
-void Game::logic(FastNoise noise) {
+void Game::logic() { //FastNoise noise
     //Set the time elapsed since the last frame
     deltaTime = (SDL_GetTicks() - lastTime);
     lastTime = SDL_GetTicks();
@@ -50,12 +50,13 @@ void Game::logic(FastNoise noise) {
                      spawn[1]*view.default_tilesize,
                      spawn[0]+spawn[2]*255*.9,
                      spawn[1]+spawn[2]*255*1.2,
-                     spawn[0]+spawn[1]+spawn[2]*255*1.7);
+                     spawn[0]+spawn[1]+spawn[2]*255*1.7,
+                     rand()%default_tilesize);
 
             makeNPC(registry,
                     spawn[0]*view.default_tilesize,
                     spawn[1]*view.default_tilesize,
-                    view.default_tilesize);
+                    default_tilesize);
         }
     }
 
@@ -71,10 +72,12 @@ void Game::render(RenderUtils &renderer) {
     //Render the visible tiles
     renderer.viewBounds(view, WU);
 
-    //Render each visible entity
-    renderer.npcEntities(registry);
+    renderer.rockEntities(registry, view.tilesize);
 
-    renderer.rockEntities(registry);
+    //Render each visible entity
+    renderer.npcEntities(registry, view.tilesize);
+
+
 
     //Draw the player sprite at the center of the screen
     renderer.playerEntity(registry);

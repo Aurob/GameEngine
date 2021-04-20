@@ -7,7 +7,7 @@ RenderUtils::RenderUtils(
         WIDTH{w}, HEIGHT{h},tilesize{t},
         rect{0, 0, 0, 0},
         color{255, 0, 0, 255}{
-            noise.SetFrequency(.199931245);
+            //noise.SetFrequency(.199931245);
             setColor(0, 55, 89, 125);
             setRect(0, 0, w, h);
             render();
@@ -39,12 +39,16 @@ void RenderUtils::playerEntity(entt::registry & registry) {
     render();
 }
 
-void RenderUtils::npcEntities(entt::registry & registry) {
-    const auto view = registry.view<NPC, Position, Rendered>();
+void RenderUtils::npcEntities(entt::registry & registry, int tilesize) {
+    const auto view = registry.view<NPC, Position, Rendered, Identification>();
     setColor(255, 255, 255, 255);
     for(const auto npc : view) {
         Position pos = view.get<Position>(npc);
-        setRect(pos.screenX, pos.screenY, tilesize/10, tilesize/10);
+        Identification i = view.get<Identification>(npc);
+        printf("%d\n", tilesize);
+        setRect(pos.screenX, pos.screenY,
+                tilesize * (static_cast<float>(i.size)/default_tilesize),
+                tilesize * (static_cast<float>(i.size)/default_tilesize));
         render();
 
         if(registry.has<Health>(npc)) {
@@ -59,13 +63,15 @@ void RenderUtils::npcEntities(entt::registry & registry) {
     }
 }
 
-void RenderUtils::rockEntities(entt::registry & registry) {
+void RenderUtils::rockEntities(entt::registry & registry, int tilesize) {
     const auto view = registry.view<Rock, Position, Rendered, Identification>();
     for(const auto rock : view) {
         Position pos = view.get<Position>(rock);
         Identification id = view.get<Identification>(rock);
         setColor(id.r, id.g, id.b, 255);
-        setRect(pos.screenX, pos.screenY, tilesize/5, tilesize/5);
+        setRect(pos.screenX, pos.screenY,
+                tilesize * (static_cast<float>(id.size)/default_tilesize),
+                tilesize * (static_cast<float>(id.size)/default_tilesize));
         render();
 
         if(registry.has<Health>(rock)) {
@@ -110,7 +116,7 @@ void RenderUtils::viewBounds(View & view, WorldUtils& WU) {
                 }
                 //Ore generation?
                 else {
-                    float tempf = WU.terrain_noise.GetFrequency();
+                    //float tempf = WU.terrain_noise.GetFrequency();
 
                     n = WU.oreGeneration(x, y);
                     rgb = 256 * n;

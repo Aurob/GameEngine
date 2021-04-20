@@ -35,7 +35,6 @@ void Application::run() {
 
     RenderUtils game_renderer{renderer, WIDTH, HEIGHT, TILESIZE};
     SDL_RenderPresent(renderer);
-
     Game game(WIDTH, HEIGHT, TILESIZE);
     game.init();
 
@@ -80,7 +79,7 @@ void Application::run() {
 
         SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
         SDL_RenderClear(renderer);
-        game.logic(game_renderer.noise);
+        game.logic(); //game_renderer.noise
         game.render(game_renderer);
         ++frame;
         SDL_RenderPresent(renderer);
