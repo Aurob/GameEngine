@@ -9,6 +9,8 @@
 #include <SDL_scancode.h>
 #include "FastNoise.h"
 #include "worldgen.hpp"
+#include <SDL2/SDL_image.h>
+
 class Game {
     public:
         Game(int, int, int);
@@ -20,15 +22,17 @@ class Game {
         std::map<SDL_Scancode, bool> keyStates;
         View view;
         int mouse[2];
+        int width, height;
         bool mousedown{false};
         WorldUtils WU;
         int lastTilesize;
     private:
         int starttime;
-        //entt::registry registry;
+        entt::registry registry;
         int deltaTime;
         int lastTime;
         int bound_entities;
+        int total_entities;
         bool screenshot;
 
 };

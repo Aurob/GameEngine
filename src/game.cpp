@@ -4,13 +4,15 @@
 
 
 Game::Game(const int WIDTH, const int HEIGHT, const int TILESIZE) : view(WIDTH, HEIGHT, TILESIZE){
+    width = WIDTH;
+    height = HEIGHT;
     //TODO
     //Move player creation to factories
     const auto player = registry.create();
     registry.emplace<Player>(player);
-    registry.emplace<Position>(player, Position{0, 0});
+    registry.emplace<Position>(player, Position{0, 0, .size=TILESIZE/10});
     registry.emplace<Movement>(player, Movement{64*10});
-
+    registry.emplace<Health>(player, Health{100, 100});
     //for(int i = 0; i < 500; ++i) {
     //    makeNPC(registry, rand() % 1000, rand() % 1000, TILESIZE);
     //}
@@ -40,10 +42,13 @@ void Game::logic() { //FastNoise noise
         view.update(registry);
     }
 
-    //Updates each entity's position
-    entityMovement(registry, view.tilesize, WU);
+    //Adds or removes the Rendered component to entities that are
+    // newly visible or no longer visible
+    view.updateEntities(registry, bound_entities);
 
-    if(bound_entities < 10) {
+    //Updates each entity's position
+    //entityMovement(registry, view.tilesize, WU);
+    if(bound_entities < 15) {
         for(auto spawn : WU.entitySpawn(5, view.bounds)) {
             makeRock(registry,
                      spawn[0]*view.default_tilesize,
@@ -51,24 +56,27 @@ void Game::logic() { //FastNoise noise
                      spawn[0]+spawn[2]*255*.9,
                      spawn[1]+spawn[2]*255*1.2,
                      spawn[0]+spawn[1]+spawn[2]*255*1.7,
-                     rand()%default_tilesize);
+                     rand()%view.default_tilesize);
 
             makeNPC(registry,
-                    spawn[0]*view.default_tilesize,
-                    spawn[1]*view.default_tilesize,
-                    default_tilesize);
+                spawn[0]*view.default_tilesize,
+                spawn[1]*view.default_tilesize,
+                view.default_tilesize);
         }
     }
 
-    //Adds or removes the Rendered component to entities that are
-    // newly visible or no longer visible
-    view.updateEntities(registry, bound_entities);
+
     //Checks for user interaction on visible entities
     entityInteractions(mouse, mousedown, registry);
+
+    //registry.sort<Rendered>([&registry](const entt::entity lhs, const entt::entity rhs) {
+    //    const auto p1 = registry.get<Position>(lhs);
+    //   const auto p2 = registry.get<Position>(rhs);
+    //   return p1.screenY < p2.screenY && p1.screenX + p1.size < p2.screenX + p2.size;
+    //});
 }
 
 void Game::render(RenderUtils &renderer) {
-
     //Render the visible tiles
     renderer.viewBounds(view, WU);
 
@@ -81,12 +89,19 @@ void Game::render(RenderUtils &renderer) {
 
     //Draw the player sprite at the center of the screen
     renderer.playerEntity(registry);
+    //
 
     //Render any UI elements
-    renderer.text((std::to_string(deltaTime)+"ms").c_str());
+    renderer.text((std::to_string(deltaTime)+"ms").c_str(), 0, 0, 100);
 
+    //HP Text
+    const auto player = registry.view<Player>();
+    for(const auto p : player) {
+        Health &usrHP = registry.get<Health>(p);
+        renderer.text((std::to_string(static_cast<int>(usrHP.health))+"/"+std::to_string(static_cast<int>(usrHP.maxHealth))+"HP").c_str(), 25, height-86, 150);
+
+    }
     if(screenshot) {
-            printf("say chees!\n");
         renderer.screenshot();
         screenshot = false;
     }

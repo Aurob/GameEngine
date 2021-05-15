@@ -1,6 +1,8 @@
 #pragma once
 #include "entt.hpp"
 #include "components.hpp"
+#include "collisions.hpp"
+#include "movement.hpp"
 #include <math.h>
 #include <string>
 #include "FastNoise.h"

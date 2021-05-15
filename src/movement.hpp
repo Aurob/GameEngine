@@ -12,4 +12,5 @@
 bool playerMovement(entt::registry &,
                     std::map<SDL_Scancode, bool> &,
                     int, WorldUtils&);
+void eMovement(Movement&, Position&, Position);
 void entityMovement(entt::registry &, int, WorldUtils&);

@@ -4,9 +4,9 @@
 void playerInput(std::map<SDL_Scancode, bool> keys) {
 }
 
-bool mouseCollision(int mouse[2], Position entity, int size) {
-    if(mouse[0] > entity.screenX && mouse[0] < entity.screenX + size) {
-        if(mouse[1] > entity.screenY && mouse[1] < entity.screenY + size) {
+bool mouseCollision(int mouse[2], Position entity) {
+    if(mouse[0] > entity.screenX && mouse[0] < entity.screenX + entity.sizeS) {
+        if(mouse[1] > entity.screenY && mouse[1] < entity.screenY + entity.sizeS) {
             return true;
         }
     }
@@ -20,10 +20,20 @@ int entityInteractions(int mouse[2], bool mousedown, entt::registry & registry) 
         Position p = entities.get<Position>(e);
         Identification i = entities.get<Identification>(e);
         count++;
-        if(mouseCollision(mouse, p, i.size) && mousedown) {
+        if(mouseCollision(mouse, p) && mousedown) {
             if(registry.has<Health>(e)) {
                 Health & amt = registry.get<Health>(e);
-                if(--amt.health <= 0) {
+                if(registry.has<Rock>(e))
+                    amt.health-=10;
+                else amt.health--;
+                if(amt.health <= 0) {
+                    if(registry.has<Rock>(e)) {
+                        const auto player = registry.view<Player>();
+                        for(const auto usr : player) {
+                            Health &usrHP = registry.get<Health>(usr);
+                            usrHP.health += p.size/10;
+                        }
+                    }
                     registry.destroy(e);
                     count--;
                 }

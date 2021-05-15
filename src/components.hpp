@@ -5,8 +5,16 @@
 struct Player {};
 struct NPC {};
 struct Rock {};
-struct Interaction {};
 struct Rendered {};
+
+struct Textured {
+    string type;
+    int index;
+};
+
+struct Interaction {
+    bool damageOnCollision;
+};
 
 //global positions are the main position values
 //screen and tile positions are calculated from the global
@@ -15,17 +23,15 @@ struct Position {
     int tileGX, tileGY; // global
     int screenX, screenY;
     int tileSX, tileSY; // screen
+    int size; //.....
+    int sizeS; // altered size for zooming
+    int direction;
 };
 
 
 struct Identification {
     int ID;
     int r, g, b;
-    int size;
-};
-
-struct Movement {
-    float speed;
 };
 
 struct Health {
@@ -33,6 +39,14 @@ struct Health {
     float health;
 };
 
+enum Behaviour { cautious, aggresive, neutral };
+struct Movement {
+    float speed;
+    float timer;
+    int dx, dy;
+    Behaviour type;
+    int step;
+};
 
 struct Pathing {//
     vector<vector<int>> neighbors{
