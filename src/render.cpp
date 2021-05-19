@@ -82,20 +82,28 @@ void RenderUtils::npcEntities(entt::registry & registry, int tilesize) {
         //        tilesize * (static_cast<float>(pos.size)/64));
         Movement behavior = registry.get<Movement>(npc);
         Identification id = registry.get<Identification>(npc);
+        Health h = registry.get<Health>(npc);
         srand(id.ID);
         switch(behavior.type) {
         case cautious:
-            if(behavior.dx<0  && abs(behavior.dx)>abs(behavior.dy)) tw = 1;
-            if(behavior.dx>0 && abs(behavior.dx)>abs(behavior.dy)) tw = 3;
-            if(behavior.dy<0 && abs(behavior.dy)>abs(behavior.dx)) tw = 2;
-            if(behavior.dy>0 && abs(behavior.dy)>abs(behavior.dx)) tw = 0;
+            if(!h.living) tw = 4;
+            else {
+                if(behavior.dx<0  && abs(behavior.dx)>abs(behavior.dy)) tw = 1;
+                if(behavior.dx>0 && abs(behavior.dx)>abs(behavior.dy)) tw = 3;
+                if(behavior.dy<0 && abs(behavior.dy)>abs(behavior.dx)) tw = 2;
+                if(behavior.dy>0 && abs(behavior.dy)>abs(behavior.dx)) tw = 0;
+            }
+
             setImage(TU.Textures[texture.type][texture.index], pos.screenX, pos.screenY, pos.sizeS, pos.sizeS,
                      (80*(rand()%11)) + 16*tw, (64*(rand()%12)+16) + 16*(behavior.step), 16, 16);
         case aggresive:
-            if(behavior.dx<0  && abs(behavior.dx)>abs(behavior.dy)) tw = 1;
-            if(behavior.dx>0 && abs(behavior.dx)>abs(behavior.dy)) tw = 3;
-            if(behavior.dy<0 && abs(behavior.dy)>abs(behavior.dx)) tw = 2;
-            if(behavior.dy>0 && abs(behavior.dy)>abs(behavior.dx)) tw = 0;
+            if(!h.living) tw = 4;
+            else {
+                if(behavior.dx<0  && abs(behavior.dx)>abs(behavior.dy)) tw = 1;
+                if(behavior.dx>0 && abs(behavior.dx)>abs(behavior.dy)) tw = 3;
+                if(behavior.dy<0 && abs(behavior.dy)>abs(behavior.dx)) tw = 2;
+                if(behavior.dy>0 && abs(behavior.dy)>abs(behavior.dx)) tw = 0;
+            }
             setImage(TU.Textures[texture.type][texture.index], pos.screenX, pos.screenY, pos.sizeS, pos.sizeS,
                      (80*(rand()%11)) + 16*tw, (64*(rand()%12)+16) + 16*(behavior.step), 16, 16);
         default:

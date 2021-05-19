@@ -6,7 +6,7 @@ struct Player {};
 struct NPC {};
 struct Rock {};
 struct Rendered {};
-
+struct Destructing {};
 struct Textured {
     string type;
     int index;
@@ -37,6 +37,8 @@ struct Identification {
 struct Health {
     float maxHealth;
     float health;
+    bool living;
+    int timer;
 };
 
 enum Behaviour { cautious, aggresive, neutral };

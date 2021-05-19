@@ -14,7 +14,7 @@ void makeNPC(entt::registry & registry, int globalX, int globalY, int default_ti
     };
     registry.emplace<Position>(npc, position);
 
-    registry.emplace<Health>(npc, Health{100,100});
+    registry.emplace<Health>(npc, Health{100,100,true});
     registry.emplace<Interaction>(npc, Interaction{true});
     registry.emplace<Identification>(npc, Identification{rand()%100000, 0, 0, 0});
     registry.emplace<Movement>(npc, Movement{

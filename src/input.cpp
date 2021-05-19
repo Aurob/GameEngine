@@ -13,7 +13,7 @@ bool mouseCollision(int mouse[2], Position entity) {
     return false;
 }
 
-int entityInteractions(int mouse[2], bool mousedown, entt::registry & registry) {
+int entityInteractions(int mouse[2], bool & mousedown, entt::registry & registry) {
     const auto entities = registry.view<Interaction, Position, Rendered, Identification>();
     int count = 0;
     for(const auto e : entities) {
@@ -23,19 +23,19 @@ int entityInteractions(int mouse[2], bool mousedown, entt::registry & registry) 
         if(mouseCollision(mouse, p) && mousedown) {
             if(registry.has<Health>(e)) {
                 Health & amt = registry.get<Health>(e);
-                if(registry.has<Rock>(e))
+                if(registry.has<Rock>(e)) {
                     amt.health-=10;
-                else amt.health--;
-                if(amt.health <= 0) {
-                    if(registry.has<Rock>(e)) {
-                        const auto player = registry.view<Player>();
-                        for(const auto usr : player) {
-                            Health &usrHP = registry.get<Health>(usr);
-                            usrHP.health += p.size/10;
+                    continue;
+                }
+                if(registry.has<NPC>(e)) {
+                    if(amt.living) {
+                        amt.health--;
+                        if(amt.health <= 0) {
+                            amt.living = false;
+                            amt.timer = SDL_GetTicks();
+                            mousedown = false;
                         }
                     }
-                    registry.destroy(e);
-                    count--;
                 }
             }
         }

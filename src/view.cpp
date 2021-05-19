@@ -52,12 +52,23 @@ void View::updateEntities(entt::registry & registry, int & bound_count) {
         player = p;
     }
     for(const auto entity : entities) {
+        if(registry.has<Health>(entity)) {
+            Health h = registry.get<Health>(entity);
+            if(!h.living && SDL_GetTicks() - h.timer > 5000) {
+                registry.remove<Position>(entity);
+                registry.destroy(entity);
+                continue;
+            }
+        }
         bound_count++;
         //Remove the Rendered component from each entity
         //then add Rendered only if its position is within the view bounds
         if(registry.has<Rendered>(entity)) {
             registry.remove<Rendered>(entity);
         }
+
+        //If an entity is destroyed, remove its existence entirely?
+        // or create sub-components?
 
         Position &pos = entities.get<Position>(entity);
         if(pos.tileGX >= bounds[0][0] - 1 && pos.tileGX <= bounds[1][0] + 1) {
@@ -75,7 +86,11 @@ void View::updateEntities(entt::registry & registry, int & bound_count) {
                 if(registry.has<Movement>(entity)) {
                     Movement &mvmnt = registry.get<Movement>(entity);
                     Position usrpos = registry.get<Position>(player);
-                    eMovement(mvmnt, pos, usrpos);
+                    Health h = registry.get<Health>(entity);
+                    if(h.living) {
+                        eMovement(mvmnt, pos, usrpos);
+                    }
+
                 }
 
                 //Get the entities interaction component
